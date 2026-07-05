@@ -4,153 +4,73 @@ from openai import OpenAI
 from datetime import datetime, timezone, timedelta
 
 SF_API_KEY = os.environ["SF_API_KEY"]
-ODDS_API_KEY = "a35f3bdb2c7921b336a60525900d40a3"
 
 tz = timezone(timedelta(hours=8))
 now = datetime.now(tz)
 date_str = now.strftime("%Y-%m-%d %H:%M")
-today = now.strftime("%Y-%m-%d")
 
 client = OpenAI(
     api_key=SF_API_KEY,
     base_url="https://api.siliconflow.cn/v1"
 )
 
-# 北单/竞彩覆盖的主要联赛sport key
-SPORTS = [
-    "soccer_world_cup",
-    "soccer_south_korea_k_league_1",
-    "soccer_south_korea_k_league_2",
-    "soccer_epl",
-    "soccer_spain_la_liga",
-    "soccer_germany_bundesliga",
-    "soccer_italy_serie_a",
-    "soccer_france_ligue_one",
-    "soccer_netherlands_eredivisie",
-    "soccer_portugal_primeira_liga",
-    "soccer_usa_mls",
-    "soccer_japan_j_league",
-    "soccer_australia_aleague",
-    "soccer_turkey_super_league",
-    "soccer_norway_eliteserien",
-    "soccer_sweden_allsvenskan",
-    "soccer_denmark_superliga",
-    "soccer_finland_veikkausliiga",
-    "soccer_ireland_premier_division",
-    "soccer_belgium_first_div",
-    "soccer_scotland_premiership",
-]
+# 今日北单真实赛事（07-05）
+TODAY_MATCHES = """
+[韩职联 第16轮 18:30]
+FC首尔 vs 仁川联 | 欧赔 主4.15 平3.26 客2.20 | 让球(-1)
+光州FC vs 蔚山HD | 欧赔 主3.23 平3.73 客2.36 | 让球(1)
+金泉尚武 vs 济州SK | 欧赔 主2.55 平3.24 客3.32 | 让球(1)
+金海FC vs 首尔衣恋 | 欧赔 主3.09 平4.04 客2.32 | 让球(-1)
+金浦FC vs 忠南牙山FC | 欧赔 主4.45 平3.48 客2.04 | 让球(1)
+庆南FC vs 天安城 | 欧赔 主2.38 平3.21 客3.72 | 让球(-1)
+全南天龙 vs 釜山IPark | 欧赔 主2.21 平3.60 客3.68 | 让球(1)
 
-def get_odds(sport):
-    try:
-        url = "https://api.the-odds-api.com/v4/sports/" + sport + "/odds/"
-        params = {
-            "apiKey": ODDS_API_KEY,
-            "regions": "eu,asia",
-            "markets": "h2h,asian_handicap,totals",
-            "oddsFormat": "decimal",
-            "dateFormat": "iso",
-        }
-        r = requests.get(url, params=params, timeout=15)
-        if r.status_code != 200:
-            return []
-        data = r.json()
-        results = []
-        for game in data:
-            home = game.get("home_team", "")
-            away = game.get("away_team", "")
-            commence = game.get("commence_time", "")
-            # 转换为北京时间
-            try:
-                from datetime import datetime as dt
-                utc_time = dt.fromisoformat(commence.replace("Z", "+00:00"))
-                bj_time = utc_time.astimezone(tz)
-                time_str = bj_time.strftime("%m-%d %H:%M")
-            except:
-                time_str = commence[:16]
+[瑞典超 第11轮]
+卡尔马 vs 厄尔格里特 | 欧赔 主2.39 平4.42 客2.80 | 20:00
+哥德堡 vs AIK索尔纳 | 欧赔 主2.44 平3.63 客3.17 | 20:00
+埃尔夫斯堡 vs 哈马比 | 欧赔 主1.84 平5.85 客3.47 | 22:30
 
-            # 只取今天的比赛
-            if today not in time_str and today not in commence:
-                try:
-                    if bj_time.strftime("%Y-%m-%d") != today:
-                        continue
-                except:
-                    continue
+[挪威甲 第14轮]
+奥德 vs 海于格松 | 欧赔 主4.13 平4.54 客1.85 | 22:00
 
-            h2h = ""
-            asian = ""
-            total = ""
+[瑞超 第13轮]
+MP米凯利 vs 哈卡 | 欧赔 主3.68 平3.88 客2.12 | 23:30
 
-            for bk in game.get("bookmakers", []):
-                for market in bk.get("markets", []):
-                    if market["key"] == "h2h" and not h2h:
-                        odds_vals = {o["name"]: o["price"] for o in market["outcomes"]}
-                        h2h = "欧赔 主" + str(odds_vals.get(home, "?")) + " 平" + str(odds_vals.get("Draw", "?")) + " 客" + str(odds_vals.get(away, "?"))
-                    if market["key"] == "asian_handicap" and not asian:
-                        outs = market["outcomes"][:2] if market["outcomes"] else []
-                        if len(outs) >= 2:
-                            asian = "亚盘 " + str(outs[0].get("point", "")) + "@" + str(outs[0].get("price", "")) + " / " + str(outs[1].get("point", "")) + "@" + str(outs[1].get("price", ""))
-                    if market["key"] == "totals" and not total:
-                        outs = {o["name"]: o["price"] for o in market["outcomes"]}
-                        total = "大小球 大@" + str(outs.get("Over", "?")) + " 小@" + str(outs.get("Under", "?"))
+[2026世界杯]
+巴西 vs 挪威 | 欧赔 主1.88 平3.46 客4.28 | 04:00 | 巴西胜率53.2% 平25.4% 挪威21.4%
+"""
 
-            line = "[" + time_str + "] " + home + " vs " + away
-            if h2h:
-                line += " | " + h2h
-            if asian:
-                line += " | " + asian
-            if total:
-                line += " | " + total
-            results.append(line)
-        return results
-    except Exception as e:
-        print("Error " + sport + ": " + str(e))
-        return []
-
-print("开始拉取数据: " + date_str)
-all_matches = []
-
-for sport in SPORTS:
-    matches = get_odds(sport)
-    if matches:
-        sport_name = sport.replace("soccer_", "").replace("_", " ").title()
-        all_matches.append("\n[" + sport_name + "]")
-        all_matches.extend(matches)
-        print(sport_name + ": " + str(len(matches)) + " 场")
-
-data_text = "\n".join(all_matches) if all_matches else "今日暂无赛事数据"
-print("\n数据预览:\n" + data_text[:800])
-
-msg = "你是顶级足球盘口分析师，精通欧亚盘、水位解读、大小球分析。现在北京时间 " + date_str + "\n\n"
-msg += "今日全部赛事数据（含欧赔+亚盘+大小球）:\n" + data_text + "\n\n"
-msg += "已验证规律:\n"
-msg += "1. 亚盘水位接近1.00意味着比分偏小\n"
-msg += "2. 弱队欧赔低于10.0必须考虑进球可能\n"
-msg += "3. 平手盘水位0.82以下是极强主队信号\n"
-msg += "4. 受让方水位越低代表庄家越看好强队\n"
-msg += "5. 防守型球队参与的比赛小球概率更高\n\n"
-msg += "请生成完整专业HTML足球看盘页面，要求:\n\n"
-msg += "内容要求（每场必须包含）:\n"
-msg += "- 球队名称+国旗emoji\n"
-msg += "- 欧赔三方真实概率（去除5%抽水反推）\n"
-msg += "- 亚盘水位信号解读（强/中/弱信号）\n"
-msg += "- 大小球概率分析\n"
+msg = "你是顶级足球盘口分析师，精通欧亚盘水位解读。现在北京时间 " + date_str + "\n\n"
+msg += "今日北单全部真实赛事:\n" + TODAY_MATCHES + "\n\n"
+msg += "水位分析规则:\n"
+msg += "1. 欧赔越低=真实概率越高（去除庄家5%抽水后反推）\n"
+msg += "2. 主胜赔率<2.0=强热门，>4.0=冷门\n"
+msg += "3. 平局赔率<3.5=平局概率高\n"
+msg += "4. 让球(-1)=主队让1球，主队需赢2球以上才赢盘\n"
+msg += "5. 让球(1)=客队让1球，客队需赢2球以上才赢盘\n\n"
+msg += "请生成完整专业HTML足球北单看盘页面。\n\n"
+msg += "每场比赛必须包含:\n"
+msg += "- 球队名称（含国旗或联赛emoji）和开赛时间\n"
+msg += "- 欧赔三方真实概率（去除5%抽水：真实概率=1/赔率/总超额）\n"
+msg += "- 三方胜率彩色进度条（主队蓝/平局灰/客队金）\n"
+msg += "- 让球分析（让球方向+水位信号强弱）\n"
+msg += "- 大小球推荐方向\n"
 msg += "- 精准比分三选: 主推/次选/保险（含概率%）\n"
-msg += "- 冷门指数: ★☆标注1-5星\n"
-msg += "- 一句话verdict\n\n"
-msg += "设计要求:\n"
+msg += "- 冷门指数★☆（1-5星）\n"
+msg += "- 一句话verdict总结\n\n"
+msg += "页面设计:\n"
 msg += "- 背景#080B0F 卡片#0D1117 边框#21262D\n"
-msg += "- 金色#F0B429 绿#3FB950 红#F85149 蓝#58A6FF\n"
-msg += "- 三方胜率进度条（CSS动画从0增长）\n"
-msg += "- 大小球双色条（绿大球/红小球）\n"
-msg += "- 冷门3星以上红色左边框3px\n"
-msg += "- 顶部实时北京时间时钟（JS每秒刷新）\n"
-msg += "- 顶部统计栏: 今日场次/高信心场/冷门预警\n"
-msg += "- 按联赛分组显示\n"
-msg += "- 最大宽度900px居中\n"
-msg += "- 完全响应式\n"
+msg += "- 金色#F0B429 绿#3FB950 红#F85149 蓝#58A6FF 紫#BC8CFF\n"
+msg += "- 顶部: 2026北单看盘标题 + 实时北京时间（JS每秒刷新）\n"
+msg += "- 顶部统计栏: 今日13场 / 世界杯1场 / 冷门预警数\n"
+msg += "- 按联赛分组，每组有联赛标题\n"
+msg += "- 三方胜率进度条CSS动画（0.8s ease-out）\n"
+msg += "- 冷门3星以上整卡红色左边框3px\n"
+msg += "- 世界杯场次金色左边框突出显示\n"
+msg += "- 最大宽度920px居中\n"
+msg += "- 手机响应式\n"
 msg += "- 零外部依赖\n\n"
-msg += "只输出完整HTML，从<!DOCTYPE html>开始，无任何解释文字。"
+msg += "只输出完整HTML从<!DOCTYPE html>开始，无任何解释。"
 
 response = client.chat.completions.create(
     model="Qwen/Qwen2.5-72B-Instruct",
@@ -175,4 +95,4 @@ os.makedirs("output", exist_ok=True)
 with open("output/index.html", "w", encoding="utf-8") as f:
     f.write(html)
 
-print("生成完成！字符数: " + str(len(html)))
+print("完成！字符数: " + str(len(html)))
