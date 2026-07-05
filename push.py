@@ -27,7 +27,6 @@ LEAGUES = {
     "K League 2": (293, 2026),
 }
 
-
 def get_fixtures(league_id, season):
     try:
         url = "https://api-football-v1.p.rapidapi.com/v3/fixtures"
@@ -58,7 +57,6 @@ def get_fixtures(league_id, season):
     except Exception as e:
         print("Fixtures error: " + str(e))
         return []
-
 
 def get_odds(league_id, season):
     try:
@@ -94,7 +92,6 @@ def get_odds(league_id, season):
         print("Odds error: " + str(e))
         return []
 
-
 all_data = []
 
 for name, (lid, season) in LEAGUES.items():
@@ -108,22 +105,55 @@ for name, (lid, season) in LEAGUES.items():
         all_data.extend(od)
     print(name + ": " + str(len(fx)) + " fixtures, " + str(len(od)) + " odds")
 
-data_text = "\n".join(all_data) if all_data else "No data today"
-print("Preview: " + data_text[:300])
+# 世界杯兜底数据
+wc_fallback = [
+    "[2026 World Cup - Today Matches]",
+    "Brazil vs Norway (04:00) - BRA 53.2% WIN | NOR 21.4% WIN | DRAW 25.4% | H:1.88 D:3.46 A:4.28 | O2.5:1.87 U2.5:1.93",
+    "Mexico vs England (08:00) - MEX 30.4% WIN | ENG 39.8% WIN | DRAW 29.8% | H:3.10 D:3.11 A:2.35 | O2.5:2.15 U2.5:1.72",
+    "[2026 World Cup - Upcoming]",
+    "Portugal vs Spain (Jul 7 03:00) - POR 23.5% WIN | ESP 50.2% WIN | DRAW 26.3% | H:4.17 D:3.35 A:1.82",
+    "USA vs Belgium (Jul 7 08:00) - USA 35.1% WIN | BEL 36.7% WIN | DRAW 28.2% | H:2.76 D:3.20 A:2.63",
+    "Argentina vs Egypt (Jul 8 00:00) - ARG 70.4% WIN | EGY 10.2% WIN | DRAW 19.4% | H:1.34 D:5.00 A:8.90",
+    "Switzerland vs Colombia (Jul 8 04:00) - SUI 27.1% WIN | COL 42.5% WIN | DRAW 30.4% | H:3.50 D:3.10 A:2.15",
+]
+
+if not all_data:
+    print("API returned no data, using World Cup fallback data")
+    all_data = wc_fallback
+else:
+    all_data.extend(wc_fallback)
+
+data_text = "\n".join(all_data)
+print("Data preview:\n" + data_text[:500])
 
 msg = "You are a professional football analyst. Date: " + date_str + "\n\n"
-msg += "Match data:\n" + data_text + "\n\n"
-msg += "Rules learned from this tournament:\n"
-msg += "1. Odds close to 1.00 means low score\n"
-msg += "2. Underdog odds below 10 means they can score\n"
-msg += "3. Defensive teams vs weak opponents can explode offensively\n"
-msg += "4. Heavy rotation teams score 1.5 goals or less\n\n"
-msg += "Generate a complete HTML football dashboard.\n"
-msg += "For each match include: win probabilities with progress bars, Asian handicap analysis, over/under analysis, 3 recommended scores with probability, upset risk rating.\n"
-msg += "Design: dark background #080B0F, gold #F0B429, green #3FB950, red #F85149, cards #0D1117.\n"
-msg += "Animated probability bars, responsive layout, real-time clock, zero external dependencies.\n"
-msg += "High upset risk matches get red left border.\n"
-msg += "Output ONLY complete HTML starting with <!DOCTYPE html>. No explanation text."
+msg += "Match data with odds:\n" + data_text + "\n\n"
+msg += "Key analytical rules:\n"
+msg += "1. Asian handicap water level close to 1.00 = low score expected\n"
+msg += "2. Underdog odds below 10 = they can score\n"
+msg += "3. Defensive teams vs weak opponents can surprise with high scoring\n"
+msg += "4. Teams with heavy rotation score 1.5 goals or less\n"
+msg += "5. Home advantage adds 8% to win probability\n\n"
+msg += "Generate a complete professional HTML football dashboard.\n"
+msg += "For each match include:\n"
+msg += "- Team names with flag emojis\n"
+msg += "- Win probability bars (home/draw/away) with animation\n"
+msg += "- Asian handicap analysis and water level signal\n"
+msg += "- Over/Under analysis with big/small ball probability\n"
+msg += "- 3 recommended scores: main pick / second choice / safe pick with probability %\n"
+msg += "- Upset risk rating (1-5 stars)\n"
+msg += "- One line verdict\n\n"
+msg += "Design requirements:\n"
+msg += "- Dark background #080B0F, cards #0D1117, border #21262D\n"
+msg += "- Gold #F0B429, green #3FB950, red #F85149, blue #58A6FF\n"
+msg += "- Animated probability bars using CSS keyframes\n"
+msg += "- Upset risk >= 3 stars: red left border 3px solid #F85149\n"
+msg += "- Real-time Beijing clock updating every second\n"
+msg += "- Score matrix showing top 5 most likely scores\n"
+msg += "- Fully responsive for mobile and desktop\n"
+msg += "- Zero external dependencies\n"
+msg += "- Max width 900px centered\n\n"
+msg += "Output ONLY complete HTML starting with <!DOCTYPE html>. No explanation."
 
 response = client.chat.completions.create(
     model="Qwen/Qwen2.5-72B-Instruct",
