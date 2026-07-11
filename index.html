@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>北单看盘系统</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-mark">⚽</div>
+      <div>
+        <div class="logo-title">北单看盘</div>
+        <div class="logo-sub">欧亚盘智能分析系统</div>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="clock-box">
+        <div class="clock-label">北京时间</div>
+        <div class="clock" id="clock">--:--:--</div>
+      </div>
+      <button class="btn-refresh" onclick="fetchOdds()">
+        <span id="refreshIcon">⟳</span> 刷新数据
+      </button>
+    </div>
+  </div>
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-item">
+      <span class="stat-num" id="statTotal">0</span>
+      <span class="stat-label">今日场次</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num green" id="statBig">0</span>
+      <span class="stat-label">大球推荐</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num gold" id="statDraw">0</span>
+      <span class="stat-label">平局主推</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num red" id="statUpset">0</span>
+      <span class="stat-label">冷门预警</span>
+    </div>
+    <div class="stat-divider"></div>
+    <div class="stat-item">
+      <span class="stat-num blue" id="statAccuracy">70%</span>
+      <span class="stat-label">大小球历史准确率</span>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- 规律面板 -->
+  <div class="rules-panel" id="rulesPanel">
+    <div class="rules-header" onclick="toggleRules()">
+      <span class="rules-title">📊 已验证分析规律（50场验证）</span>
+      <span class="rules-toggle" id="rulesToggle">▼</span>
+    </div>
+    <div class="rules-body" id="rulesBody">
+      <div class="rules-grid">
+        <div class="rule-item green-rule">
+          <div class="rule-icon">✅</div>
+          <div class="rule-text">弱队欧赔&lt;10 → 必须考虑进球（100%验证）</div>
+        </div>
+        <div class="rule-item green-rule">
+          <div class="rule-icon">✅</div>
+          <div class="rule-text">大小球66.7%最可靠，优先判断</div>
+        </div>
+        <div class="rule-item gold-rule">
+          <div class="rule-icon">⚠️</div>
+          <div class="rule-text">平局概率&gt;30% 且 排名差距&lt;5位 → 直接主推平局</div>
+        </div>
+        <div class="rule-item gold-rule">
+          <div class="rule-icon">⚠️</div>
+          <div class="rule-text">让球高赔率&gt;3.5 → 极强警示，客队或平局</div>
+        </div>
+        <div class="rule-item red-rule">
+          <div class="rule-icon">🚨</div>
+          <div class="rule-text">亚盘水位&gt;1.00 → 热门队比分偏小</div>
+        </div>
+        <div class="rule-item red-rule">
+          <div class="rule-icon">🚨</div>
+          <div class="rule-text">强热门赔率&lt;2.0 面对弱队 → 大比分可能</div>
+        </div>
+        <div class="rule-item blue-rule">
+          <div class="rule-icon">🏠</div>
+          <div class="rule-text">所有联赛主场优势均+15%</div>
+        </div>
+        <div class="rule-item blue-rule">
+          <div class="rule-icon">🏆</div>
+          <div class="rule-text">欧战主场爆发力极强 → 优先押主队</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 联赛筛选 -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterLeague('all', this)">全部</button>
+    <button class="filter-btn" onclick="filterLeague('世界杯', this)">🌍 世界杯</button>
+    <button class="filter-btn" onclick="filterLeague('韩', this)">🇰🇷 韩联</button>
+    <button class="filter-btn" onclick="filterLeague('挪', this)">🇳🇴 挪超</button>
+    <button class="filter-btn" onclick="filterLeague('芬', this)">🇫🇮 芬超</button>
+    <button class="filter-btn" onclick="filterLeague('瑞典', this)">🇸🇪 瑞典超</button>
+    <button class="filter-btn" onclick="filterLeague('爱', this)">🇮🇪 爱超</button>
+    <button class="filter-btn" onclick="filterLeague('巴西', this)">🇧🇷 巴西</button>
+    <button class="filter-btn" onclick="filterLeague('欧', this)">🏆 欧战</button>
+  </div>
+
+  <!-- 数据区 -->
+  <div id="matchesContainer">
+    <div class="welcome-state">
+      <div class="welcome-icon">⚽</div>
+      <div class="welcome-title">北单看盘系统</div>
+      <div class="welcome-sub">点击「刷新数据」自动拉取今日赔率<br>或在下方手动输入盘口数据</div>
+      <div class="welcome-actions">
+        <button class="btn-primary" onclick="fetchOdds()">⟳ 自动拉取（OddsAPI）</button>
+        <button class="btn-secondary" onclick="showManualInput()">✏️ 手动输入</button>
+        <button class="btn-secondary" onclick="loadDemo()">📋 加载演示数据</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 手动输入区 -->
+  <div class="manual-input" id="manualInput" style="display:none">
+    <div class="manual-header">
+      <span>✏️ 手动输入盘口数据</span>
+      <button class="close-btn" onclick="hideManualInput()">✕</button>
+    </div>
+    <div class="manual-hint">
+      格式：<code>联赛名 时间 主队 vs 客队 主赔/平赔/客赔 [让球]</code><br>
+      例：<code>韩K联 18:30 金泉尚武 vs 富川FC 1.98/3.25/3.65 让平手</code>
+    </div>
+    <textarea id="manualText" placeholder="粘贴今日北单数据..."></textarea>
+    <div class="manual-actions">
+      <button class="btn-primary" onclick="parseManual()">✅ 开始分析</button>
+      <button class="btn-secondary" onclick="hideManualInput()">取消</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- 比赛卡片模板（JS动态生成） -->
+<template id="matchTemplate">
+  <div class="match-card" data-league="">
+    <div class="card-top">
+      <div class="league-tag"></div>
+      <div class="match-time"></div>
+      <div class="upset-badge"></div>
+    </div>
+    <div class="card-body">
+      <div class="teams">
+        <div class="team home-team"></div>
+        <div class="score-vs">VS</div>
+        <div class="team away-team"></div>
+      </div>
+      <div class="prob-bars">
+        <div class="prob-row">
+          <span class="prob-label">主胜</span>
+          <div class="bar-track"><div class="bar-fill home-bar"></div></div>
+          <span class="prob-val home-val"></span>
+        </div>
+        <div class="prob-row">
+          <span class="prob-label">平局</span>
+          <div class="bar-track"><div class="bar-fill draw-bar"></div></div>
+          <span class="prob-val draw-val"></span>
+        </div>
+        <div class="prob-row">
+          <span class="prob-label">客胜</span>
+          <div class="bar-track"><div class="bar-fill away-bar"></div></div>
+          <span class="prob-val away-val"></span>
+        </div>
+      </div>
+      <div class="odds-chips">
+        <div class="chip">主 <span class="home-odds"></span></div>
+        <div class="chip">平 <span class="draw-odds"></span></div>
+        <div class="chip">客 <span class="away-odds"></span></div>
+        <div class="chip chip-asian">让球 <span class="handicap-val">-</span></div>
+      </div>
+      <div class="analysis-grid">
+        <div class="analysis-box">
+          <div class="analysis-title">大小球分析</div>
+          <div class="bigsmall-bar">
+            <div class="big-fill"></div>
+            <div class="small-fill"></div>
+          </div>
+          <div class="bigsmall-labels">
+            <span class="big-pct"></span>
+            <span class="small-pct"></span>
+          </div>
+        </div>
+        <div class="analysis-box">
+          <div class="analysis-title">水位信号</div>
+          <div class="signal-main"></div>
+          <div class="signal-sub"></div>
+        </div>
+      </div>
+      <div class="scores-section">
+        <div class="scores-title">精准比分推演</div>
+        <div class="scores-chips">
+          <div class="score-chip main-score">
+            <span class="score-tag">主推</span>
+            <span class="score-val"></span>
+            <span class="score-pct"></span>
+          </div>
+          <div class="score-chip second-score">
+            <span class="score-tag">次选</span>
+            <span class="score-val"></span>
+            <span class="score-pct"></span>
+          </div>
+          <div class="score-chip safe-score">
+            <span class="score-tag">保险</span>
+            <span class="score-val"></span>
+            <span class="score-pct"></span>
+          </div>
+        </div>
+      </div>
+      <div class="verdict-box"></div>
+    </div>
+  </div>
+</template>
+
+<script src="app.js"></script>
+</body>
+</html>
