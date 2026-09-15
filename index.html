@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026北单看盘</title>
+<style>
+  body {
+    background: #080B0F;
+    color: #C9D1D9;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .container {
+    max-width: 920px;
+    width: 100%;
+  }
+  .header {
+    background: #0D1117;
+    padding: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #21262D;
+  }
+  .header h1 {
+    margin: 0;
+  }
+  .header .time {
+    font-size: 18px;
+  }
+  .stats {
+    background: #0D1117;
+    padding: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #21262D;
+  }
+  .league-title {
+    background: #0D1117;
+    padding: 10px;
+    width: 100%;
+    border-bottom: 2px solid #21262D;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .match-card {
+    background: #0D1117;
+    border: 1px solid #21262D;
+    padding: 15px;
+    margin: 10px 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    border-radius: 5px;
+  }
+  .match-card.important {
+    border-left: 3px solid #F85149;
+  }
+  .match-card.golden {
+    border-left: 3px solid #F0B429;
+  }
+  .match-card .teams {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  .match-card .time {
+    font-size: 14px;
+    margin-top: 5px;
+  }
+  .match-card .odds {
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .match-card .odds .bar {
+    width: 30%;
+    height: 20px;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 5px;
+  }
+  .match-card .odds .bar .blue {
+    background: #58A6FF;
+    width: 0;
+    animation: fill 0.8s ease-out forwards;
+  }
+  .match-card .odds .bar .gray {
+    background: #6E7681;
+    width: 0;
+    animation: fill 0.8s ease-out forwards;
+  }
+  .match-card .odds .bar .gold {
+    background: #F0B429;
+    width: 0;
+    animation: fill 0.8s ease-out forwards;
+  }
+  .match-card .handicap {
+    margin-top: 10px;
+  }
+  .match-card .over-under {
+    margin-top: 10px;
+  }
+  .match-card .score-prediction {
+    margin-top: 10px;
+  }
+  .match-card .cold-index {
+    margin-top: 10px;
+  }
+  .match-card .verdict {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  @keyframes fill {
+    to {
+      width: 100%;
+    }
+  }
+  @media (max-width: 600px) {
+    .match-card .odds .bar {
+      width: 100%;
+    }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>2026北单看盘</h1>
+    <div class="time" id="current-time"></div>
+  </div>
+  <div class="stats">
+    <div>今日13场</div>
+    <div>世界杯1场</div>
+    <div>冷门预警数: 3</div>
+  </div>
+  <div class="league-title">韩职联 第16轮</div>
+  <div class="match-card">
+    <div class="teams">FC首尔 🇰🇷 vs 仁川联 🇰🇷</div>
+    <div class="time">18:30</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 26.5%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 20.8%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 52.7%;"></div></div>
+    </div>
+    <div class="handicap">客队让1球，水位信号强</div>
+    <div class="over-under">推荐大球</div>
+    <div class="score-prediction">主推: 1-2 (45%) / 次选: 0-2 (30%) / 保险: 1-1 (25%)</div>
+    <div class="cold-index">冷门指数: ★★★☆☆</div>
+    <div class="verdict">客队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="teams">光州FC 🇰🇷 vs 蔚山HD 🇰🇷</div>
+    <div class="time">18:30</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 31.5%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 26.5%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 42.0%;"></div></div>
+    </div>
+    <div class="handicap">客队让1球，水位信号中</div>
+    <div class="over-under">推荐小球</div>
+    <div class="score-prediction">主推: 1-2 (40%) / 次选: 1-1 (35%) / 保险: 0-1 (25%)</div>
+    <div class="cold-index">冷门指数: ★★☆☆☆</div>
+    <div class="verdict">客队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="teams">金泉尚武 🇰🇷 vs 济州SK 🇰🇷</div>
+    <div class="time">18:30</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 41.5%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 25.6%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 32.9%;"></div></div>
+    </div>
+    <div class="handicap">主队让1球，水位信号弱</div>
+    <div class="over-under">推荐大球</div>
+    <div class="score-prediction">主推: 2-1 (45%) / 次选: 1-1 (30%) / 保险: 2-2 (25%)</div>
+    <div class="cold-index">冷门指数: ★★☆☆☆</div>
+    <div class="verdict">主队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="teams">金海FC 🇰🇷 vs 首尔衣恋 🇰🇷</div>
+    <div class="time">18:30</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 32.5%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 23.5%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 44.0%;"></div></div>
+    </div>
+    <div class="handicap">客队让1球，水位信号中</div>
+    <div class="over-under">推荐小球</div>
+    <div class="score-prediction">主推: 1-2 (40%) / 次选: 1-1 (35%) / 保险: 0-1 (25%)</div>
+    <div class="cold-index">冷门指数: ★★☆☆☆</div>
+    <div class="verdict">客队胜</div>
+  </div>
+  <div class="match-card important">
+    <div class="teams">金浦FC 🇰🇷 vs 忠南牙山FC 🇰🇷</div>
+    <div class="time">18:30</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 25.5%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 28.5%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 46.0%;"></div></div>
+    </div>
+    <div class="handicap">客队让1球，水位信号强</div>
+    <div class="over-under">推荐小球</div>
+    <div class="score-prediction">主推: 1-2 (40%) / 次选: 1-1 (35%) / 保险: 0-1 (25%)</div>
+    <div class="cold-index">冷门指数: ★★★★☆</div>
+    <div class="verdict">客队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="teams">庆南FC 🇰🇷 vs 天安城 🇰🇷</div>
+    <div class="time">18:30</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 45.5%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 24.5%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 30.0%;"></div></div>
+    </div>
+    <div class="handicap">主队让1球，水位信号中</div>
+    <div class="over-under">推荐大球</div>
+    <div class="score-prediction">主推: 2-1 (45%) / 次选: 1-1 (30%) / 保险: 2-2 (25%)</div>
+    <div class="cold-index">冷门指数: ★★☆☆☆</div>
+    <div class="verdict">主队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="teams">全南天龙 🇰🇷 vs 釜山IPark 🇰🇷</div>
+    <div class="time">18:30</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 46.5%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 22.5%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 31.0%;"></div></div>
+    </div>
+    <div class="handicap">主队让1球，水位信号中</div>
+    <div class="over-under">推荐大球</div>
+    <div class="score-prediction">主推: 2-1 (45%) / 次选: 1-1 (30%) / 保险: 2-2 (25%)</div>
+    <div class="cold-index">冷门指数: ★★☆☆☆</div>
+    <div class="verdict">主队胜</div>
+  </div>
+  <div class="league-title">瑞典超 第11轮</div>
+  <div class="match-card">
+    <div class="teams">卡尔马 🇸🇪 vs 厄尔格里特 🇸🇪</div>
+    <div class="time">20:00</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 35.5%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 21.5%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 33.0%;"></div></div>
+    </div>
+    <div class="handicap">主队让1球，水位信号弱</div>
+    <div class="over-under">推荐大球</div>
+    <div class="score-prediction">主推: 2-1 (45%) / 次选: 1-1 (30%) / 保险: 2-2 (25%)</div>
+    <div class="cold-index">冷门指数: ★★☆☆☆</div>
+    <div class="verdict">主队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="teams">哥德堡 🇸🇪 vs AIK索尔纳 🇸🇪</div>
+    <div class="time">20:00</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 36.5%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 27.5%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 36.0%;"></div></div>
+    </div>
+    <div class="handicap">平局，水位信号中</div>
+    <div class="over-under">推荐大球</div>
+    <div class="score-prediction">主推: 1-1 (40%) / 次选: 2-1 (35%) / 保险: 1-2 (25%)</div>
+    <div class="cold-index">冷门指数: ★★☆☆☆</div>
+    <div class="verdict">平局</div>
+  </div>
+  <div class="match-card">
+    <div class="teams">埃尔夫斯堡 🇸🇪 vs 哈马比 🇸🇪</div>
+    <div class="time">22:30</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 50.5%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 17.5%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 29.0%;"></div></div>
+    </div>
+    <div class="handicap">主队让1球，水位信号中</div>
+    <div class="over-under">推荐大球</div>
+    <div class="score-prediction">主推: 2-1 (45%) / 次选: 1-1 (30%) / 保险: 2-2 (25%)</div>
+    <div class="cold-index">冷门指数: ★★☆☆☆</div>
+    <div class="verdict">主队胜</div>
+  </div>
+  <div class="league-title">挪威甲 第14轮</div>
+  <div class="match-card">
+    <div class="teams">奥德 🇳🇴 vs 海于格松 🇳🇴</div>
+    <div class="time">22:00</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 23.5%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 21.5%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 55.0%;"></div></div>
+    </div>
+    <div class="handicap">客队让1球，水位信号强</div>
+    <div class="over-under">推荐大球</div>
+    <div class="score-prediction">主推: 1-2 (45%) / 次选: 1-1 (30%) / 保险: 0-1 (25%)</div>
+    <div class="cold-index">冷门指数: ★★☆☆☆</div>
+    <div class="verdict">客队胜</div>
+  </div>
+  <div class="league-title">瑞超 第13轮</div>
+  <div class="match-card">
+    <div class="teams">MP米凯利 🇫🇮 vs 哈卡 🇫🇮</div>
+    <div class="time">23:30</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 28.5%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 26.5%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 45.0%;"></div></div>
+    </div>
+    <div class="handicap">客队让1球，水位信号中</div>
+    <div class="over-under">推荐大球</div>
+    <div class="score-prediction">主推: 1-2 (45%) / 次选: 1-1 (30%) / 保险: 0-1 (25%)</div>
+    <div class="cold-index">冷门指数: ★★☆☆☆</div>
+    <div class="verdict">客队胜</div>
+  </div>
+  <div class="league-title">2026世界杯</div>
+  <div class="match-card golden">
+    <div class="teams">巴西 🇧🇷 vs 挪威 🇳🇴</div>
+    <div class="time">04:00</div>
+    <div class="odds">
+      <div class="bar"><div class="blue" style="width: 53.2%;"></div></div>
+      <div class="bar"><div class="gray" style="width: 25.4%;"></div></div>
+      <div class="bar"><div class="gold" style="width: 21.4%;"></div></div>
+    </div>
+    <div class="handicap">主队让1球，水位信号强</div>
+    <div class="over-under">推荐大球</div>
+    <div class="score-prediction">主推: 2-1 (45%) / 次选: 2-0 (30%) / 保险: 1-1 (25%)</div>
+    <div class="cold-index">冷门指数: ★☆☆☆☆</div>
+    <div class="verdict">主队胜</div>
+  </div>
+</div>
+<script>
+  function updateTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('zh-CN', { hour12: false });
+    document.getElementById('current-time').innerText = `北京时间: ${timeString}`;
+  }
+  setInterval(updateTime, 1000);
+  updateTime();
+</script>
+</body>
+</html>
+```
