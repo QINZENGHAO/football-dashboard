@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026北单看盘</title>
+<style>
+  body {
+    background: #080B0F;
+    color: #C9D1D9;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .container {
+    max-width: 920px;
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    color: #58A6FF;
+  }
+  .header .time {
+    font-size: 16px;
+  }
+  .stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .stats span {
+    font-size: 14px;
+  }
+  .league-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  .match-card {
+    background: #0D1117;
+    border: 1px solid #21262D;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    position: relative;
+  }
+  .match-card .cold-warning {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 3px;
+    background: #F85149;
+  }
+  .match-card .world-cup {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 3px;
+    background: #F0B429;
+  }
+  .match-card .match-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .match-card .match-info .team {
+    font-size: 16px;
+  }
+  .match-card .match-info .time {
+    font-size: 14px;
+  }
+  .match-card .odds {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .match-card .odds .label {
+    font-size: 14px;
+  }
+  .match-card .odds .progress {
+    width: 100%;
+    height: 10px;
+    background: #21262D;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  .match-card .odds .progress-bar {
+    height: 100%;
+    transition: width 0.8s ease-out;
+  }
+  .match-card .odds .progress-bar.home {
+    background: #58A6FF;
+  }
+  .match-card .odds .progress-bar.draw {
+    background: #8B949E;
+  }
+  .match-card .odds .progress-bar.away {
+    background: #F0B429;
+  }
+  .match-card .handicap {
+    margin-bottom: 10px;
+  }
+  .match-card .handicap .label {
+    font-size: 14px;
+  }
+  .match-card .handicap .signal {
+    font-size: 14px;
+    color: #3FB950;
+  }
+  .match-card .over-under {
+    margin-bottom: 10px;
+  }
+  .match-card .over-under .label {
+    font-size: 14px;
+  }
+  .match-card .over-under .recommendation {
+    font-size: 14px;
+    color: #F0B429;
+  }
+  .match-card .score-prediction {
+    margin-bottom: 10px;
+  }
+  .match-card .score-prediction .label {
+    font-size: 14px;
+  }
+  .match-card .score-prediction .scores {
+    font-size: 14px;
+  }
+  .match-card .cold-index {
+    margin-bottom: 10px;
+  }
+  .match-card .cold-index .label {
+    font-size: 14px;
+  }
+  .match-card .cold-index .stars {
+    font-size: 14px;
+  }
+  .match-card .verdict {
+    font-size: 14px;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>2026北单看盘</h1>
+    <div class="time" id="current-time"></div>
+  </div>
+  <div class="stats">
+    <span>今日13场</span>
+    <span>世界杯1场</span>
+    <span id="cold-warning-count">冷门预警数: 0</span>
+  </div>
+  <div class="league-title">韩职联 第16轮</div>
+  <div class="match-card">
+    <div class="match-info">
+      <div class="team">FC首尔 🇰🇷 vs 仁川联 🇰🇷</div>
+      <div class="time">18:30</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 24.6%;"></div>
+        <div class="progress-bar draw" style="width: 20.2%;"></div>
+        <div class="progress-bar away" style="width: 45.2%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">主队让1球，信号弱</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">小球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">1-2 (45.2%) / 0-1 (20.2%) / 1-1 (24.6%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★☆☆☆☆</div>
+    </div>
+    <div class="verdict">客队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="match-info">
+      <div class="team">光州FC 🇰🇷 vs 蔚山HD 🇰🇷</div>
+      <div class="time">18:30</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 28.9%;"></div>
+        <div class="progress-bar draw" style="width: 26.3%;"></div>
+        <div class="progress-bar away" style="width: 44.8%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">客队让1球，信号弱</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">小球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">1-2 (44.8%) / 1-1 (26.3%) / 0-1 (28.9%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★☆☆☆☆</div>
+    </div>
+    <div class="verdict">客队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="match-info">
+      <div class="team">金泉尚武 🇰🇷 vs 济州SK 🇰🇷</div>
+      <div class="time">18:30</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 37.3%;"></div>
+        <div class="progress-bar draw" style="width: 29.6%;"></div>
+        <div class="progress-bar away" style="width: 33.1%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">客队让1球，信号中</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">小球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">1-1 (29.6%) / 1-2 (33.1%) / 2-1 (37.3%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★★☆☆☆</div>
+    </div>
+    <div class="verdict">平局</div>
+  </div>
+  <div class="match-card">
+    <div class="match-info">
+      <div class="team">金海FC 🇰🇷 vs 首尔衣恋 🇰🇷</div>
+      <div class="time">18:30</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 32.7%;"></div>
+        <div class="progress-bar draw" style="width: 24.2%;"></div>
+        <div class="progress-bar away" style="width: 43.1%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">主队让1球，信号弱</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">小球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">1-2 (43.1%) / 1-1 (24.2%) / 0-1 (32.7%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★☆☆☆☆</div>
+    </div>
+    <div class="verdict">客队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="match-info">
+      <div class="team">金浦FC 🇰🇷 vs 忠南牙山FC 🇰🇷</div>
+      <div class="time">18:30</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 22.5%;"></div>
+        <div class="progress-bar draw" style="width: 28.7%;"></div>
+        <div class="progress-bar away" style="width: 48.8%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">客队让1球，信号中</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">小球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">1-2 (48.8%) / 1-1 (28.7%) / 0-1 (22.5%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★★☆☆☆</div>
+    </div>
+    <div class="verdict">客队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="match-info">
+      <div class="team">庆南FC 🇰🇷 vs 天安城 🇰🇷</div>
+      <div class="time">18:30</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 42.9%;"></div>
+        <div class="progress-bar draw" style="width: 29.9%;"></div>
+        <div class="progress-bar away" style="width: 27.2%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">主队让1球，信号中</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">大球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">2-1 (42.9%) / 1-1 (29.9%) / 1-0 (27.2%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★★☆☆☆</div>
+    </div>
+    <div class="verdict">主队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="match-info">
+      <div class="team">全南天龙 🇰🇷 vs 釜山IPark 🇰🇷</div>
+      <div class="time">18:30</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 44.8%;"></div>
+        <div class="progress-bar draw" style="width: 27.8%;"></div>
+        <div class="progress-bar away" style="width: 27.4%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">主队让1球，信号中</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">大球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">2-1 (44.8%) / 1-1 (27.8%) / 1-0 (27.4%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★★☆☆☆</div>
+    </div>
+    <div class="verdict">主队胜</div>
+  </div>
+  <div class="league-title">瑞典超 第11轮</div>
+  <div class="match-card">
+    <div class="match-info">
+      <div class="team">卡尔马 🇸🇪 vs 厄尔格里特 🇸🇪</div>
+      <div class="time">20:00</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 41.8%;"></div>
+        <div class="progress-bar draw" style="width: 22.6%;"></div>
+        <div class="progress-bar away" style="width: 35.6%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">客队让1球，信号弱</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">小球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">1-1 (22.6%) / 1-0 (41.8%) / 1-2 (35.6%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★☆☆☆☆</div>
+    </div>
+    <div class="verdict">主队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="match-info">
+      <div class="team">哥德堡 🇸🇪 vs AIK索尔纳 🇸🇪</div>
+      <div class="time">20:00</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 40.2%;"></div>
+        <div class="progress-bar draw" style="width: 27.5%;"></div>
+        <div class="progress-bar away" style="width: 32.3%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">客队让1球，信号弱</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">小球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">1-1 (27.5%) / 1-0 (40.2%) / 1-2 (32.3%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★☆☆☆☆</div>
+    </div>
+    <div class="verdict">主队胜</div>
+  </div>
+  <div class="match-card">
+    <div class="match-info">
+      <div class="team">埃尔夫斯堡 🇸🇪 vs 哈马比 🇸🇪</div>
+      <div class="time">22:30</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 53.2%;"></div>
+        <div class="progress-bar draw" style="width: 17.1%;"></div>
+        <div class="progress-bar away" style="width: 29.7%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">主队让1球，信号强</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">大球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">2-1 (53.2%) / 1-1 (17.1%) / 1-0 (29.7%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★★★☆☆</div>
+    </div>
+    <div class="verdict">主队胜</div>
+  </div>
+  <div class="league-title">挪威甲 第14轮</div>
+  <div class="match-card">
+    <div class="match-info">
+      <div class="team">奥德 🇳🇴 vs 海于格松 🇳🇴</div>
+      <div class="time">22:00</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 23.7%;"></div>
+        <div class="progress-bar draw" style="width: 21.6%;"></div>
+        <div class="progress-bar away" style="width: 54.7%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">客队让1球，信号强</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">大球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">1-2 (54.7%) / 1-1 (21.6%) / 0-1 (23.7%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★★★☆☆</div>
+    </div>
+    <div class="verdict">客队胜</div>
+  </div>
+  <div class="league-title">瑞超 第13轮</div>
+  <div class="match-card">
+    <div class="match-info">
+      <div class="team">MP米凯利 🇫🇮 vs 哈卡 🇫🇮</div>
+      <div class="time">23:30</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 27.2%;"></div>
+        <div class="progress-bar draw" style="width: 25.8%;"></div>
+        <div class="progress-bar away" style="width: 47.2%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">客队让1球，信号中</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">小球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">1-2 (47.2%) / 1-1 (25.8%) / 0-1 (27.2%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★★☆☆☆</div>
+    </div>
+    <div class="verdict">客队胜</div>
+  </div>
+  <div class="league-title">2026世界杯</div>
+  <div class="match-card">
+    <div class="world-cup"></div>
+    <div class="match-info">
+      <div class="team">巴西 🇧🇷 vs 挪威 🇳🇴</div>
+      <div class="time">04:00</div>
+    </div>
+    <div class="odds">
+      <div class="label">欧赔真实概率</div>
+      <div class="progress">
+        <div class="progress-bar home" style="width: 53.2%;"></div>
+        <div class="progress-bar draw" style="width: 25.4%;"></div>
+        <div class="progress-bar away" style="width: 21.4%;"></div>
+      </div>
+    </div>
+    <div class="handicap">
+      <div class="label">让球分析</div>
+      <div class="signal">主队让1球，信号强</div>
+    </div>
+    <div class="over-under">
+      <div class="label">大小球推荐方向</div>
+      <div class="recommendation">大球</div>
+    </div>
+    <div class="score-prediction">
+      <div class="label">精准比分三选</div>
+      <div class="scores">2-1 (53.2%) / 1-1 (25.4%) / 1-0 (21.4%)</div>
+    </div>
+    <div class="cold-index">
+      <div class="label">冷门指数</div>
+      <div class="stars">★☆☆☆☆</div>
+    </div>
+    <div class="verdict">主队胜</div>
+  </div>
+</div>
+<script>
+  function updateCurrentTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('zh-CN', { hour12: false });
+    document.getElementById('current-time').innerText = `北京时间: ${timeString}`;
+  }
+
+  function updateColdWarningCount() {
+    const coldWarningCount = document.querySelectorAll('.match-card .cold-index .stars').filter(stars => stars.innerText.includes('★★★')).length;
+    document.getElementById('cold-warning-count').innerText = `冷门预警数: ${coldWarningCount}`;
+  }
+
+  setInterval(() => {
+    updateCurrentTime();
+    updateColdWarningCount();
+  }, 1000);
+
+  updateCurrentTime();
+  updateColdWarningCount();
+</script>
+</body>
+</html>
+```
