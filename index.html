@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026北单看盘</title>
+<style>
+body {
+    background: #080B0F;
+    color: #FFFFFF;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.container {
+    max-width: 920px;
+    width: 100%;
+    padding: 20px;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0;
+    border-bottom: 1px solid #21262D;
+}
+.header h1 {
+    font-size: 24px;
+}
+.header .time {
+    font-size: 16px;
+}
+.stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 10px 0;
+    border-bottom: 1px solid #21262D;
+}
+.league {
+    font-size: 18px;
+    margin: 20px 0 10px;
+}
+.card {
+    background: #0D1117;
+    border: 1px solid #21262D;
+    border-radius: 8px;
+    padding: 15px;
+    margin: 10px 0;
+    width: 100%;
+}
+.card .title {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+.card .odds {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+.card .odds .bar {
+    width: 100%;
+    height: 20px;
+    background: #21262D;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+.card .odds .bar .segment {
+    position: absolute;
+    height: 100%;
+    transition: width 0.8s ease-out;
+}
+.card .odds .bar .home {
+    background: #58A6FF;
+}
+.card .odds .bar .draw {
+    background: #888888;
+}
+.card .odds .bar .away {
+    background: #F0B429;
+}
+.card .handicap {
+    margin-bottom: 10px;
+}
+.card .total {
+    margin-bottom: 10px;
+}
+.card .score {
+    margin-bottom: 10px;
+}
+.card .score .option {
+    display: inline-block;
+    margin-right: 10px;
+}
+.card .score .option .probability {
+    font-size: 12px;
+    color: #888888;
+}
+.card .cold {
+    margin-bottom: 10px;
+}
+.card .verdict {
+    font-size: 14px;
+    font-weight: bold;
+}
+.card.cold {
+    border-left: 3px solid #F85149;
+}
+.card.gold {
+    border-left: 3px solid #F0B429;
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>2026北单看盘</h1>
+        <div class="time" id="current-time"></div>
+    </div>
+    <div class="stats">
+        <div>今日13场</div>
+        <div>世界杯1场</div>
+        <div id="cold-warning">冷门预警数: 0</div>
+    </div>
+    <div class="league">韩职联 第16轮</div>
+    <div class="card">
+        <div class="title">FC首尔 🇰🇷 vs 仁川联 🇰🇷 | 18:30</div>
+        <div class="odds">
+            <div>主胜 4.15</div>
+            <div>平 3.26</div>
+            <div>客胜 2.20</div>
+            <div class="bar">
+                <div class="segment home" style="width: 23.61%;"></div>
+                <div class="segment draw" style="width: 29.44%;"></div>
+                <div class="segment away" style="width: 46.95%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(-1) 主队需赢2球以上才赢盘 | 水位信号弱</div>
+        <div class="total">大小球推荐方向: 小</div>
+        <div class="score">
+            <div class="option">1-2 <span class="probability">30%</span></div>
+            <div class="option">0-1 <span class="probability">25%</span></div>
+            <div class="option">1-1 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★★★☆☆</div>
+        <div class="verdict">客队有望赢盘</div>
+    </div>
+    <div class="card">
+        <div class="title">光州FC 🇰🇷 vs 蔚山HD 🇰🇷 | 18:30</div>
+        <div class="odds">
+            <div>主胜 3.23</div>
+            <div>平 3.73</div>
+            <div>客胜 2.36</div>
+            <div class="bar">
+                <div class="segment home" style="width: 29.72%;"></div>
+                <div class="segment draw" style="width: 26.81%;"></div>
+                <div class="segment away" style="width: 43.47%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(1) 客队需赢2球以上才赢盘 | 水位信号弱</div>
+        <div class="total">大小球推荐方向: 小</div>
+        <div class="score">
+            <div class="option">0-1 <span class="probability">30%</span></div>
+            <div class="option">1-1 <span class="probability">25%</span></div>
+            <div class="option">0-2 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★★☆☆☆</div>
+        <div class="verdict">客队有望赢盘</div>
+    </div>
+    <div class="card">
+        <div class="title">金泉尚武 🇰🇷 vs 济州SK 🇰🇷 | 18:30</div>
+        <div class="odds">
+            <div>主胜 2.55</div>
+            <div>平 3.24</div>
+            <div>客胜 3.32</div>
+            <div class="bar">
+                <div class="segment home" style="width: 37.64%;"></div>
+                <div class="segment draw" style="width: 30.86%;"></div>
+                <div class="segment away" style="width: 31.50%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(1) 客队需赢2球以上才赢盘 | 水位信号弱</div>
+        <div class="total">大小球推荐方向: 大</div>
+        <div class="score">
+            <div class="option">1-1 <span class="probability">30%</span></div>
+            <div class="option">2-1 <span class="probability">25%</span></div>
+            <div class="option">1-2 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★★☆☆☆</div>
+        <div class="verdict">平局概率较高</div>
+    </div>
+    <div class="card">
+        <div class="title">金海FC 🇰🇷 vs 首尔衣恋 🇰🇷 | 18:30</div>
+        <div class="odds">
+            <div>主胜 3.09</div>
+            <div>平 4.04</div>
+            <div>客胜 2.32</div>
+            <div class="bar">
+                <div class="segment home" style="width: 31.72%;"></div>
+                <div class="segment draw" style="width: 24.76%;"></div>
+                <div class="segment away" style="width: 43.52%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(-1) 主队需赢2球以上才赢盘 | 水位信号弱</div>
+        <div class="total">大小球推荐方向: 小</div>
+        <div class="score">
+            <div class="option">0-1 <span class="probability">30%</span></div>
+            <div class="option">1-1 <span class="probability">25%</span></div>
+            <div class="option">0-2 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★★☆☆☆</div>
+        <div class="verdict">客队有望赢盘</div>
+    </div>
+    <div class="card">
+        <div class="title">金浦FC 🇰🇷 vs 忠南牙山FC 🇰🇷 | 18:30</div>
+        <div class="odds">
+            <div>主胜 4.45</div>
+            <div>平 3.48</div>
+            <div>客胜 2.04</div>
+            <div class="bar">
+                <div class="segment home" style="width: 22.02%;"></div>
+                <div class="segment draw" style="width: 28.16%;"></div>
+                <div class="segment away" style="width: 49.82%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(1) 客队需赢2球以上才赢盘 | 水位信号强</div>
+        <div class="total">大小球推荐方向: 小</div>
+        <div class="score">
+            <div class="option">0-1 <span class="probability">30%</span></div>
+            <div class="option">1-1 <span class="probability">25%</span></div>
+            <div class="option">0-2 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★★★★☆</div>
+        <div class="verdict">客队有望赢盘</div>
+    </div>
+    <div class="card">
+        <div class="title">庆南FC 🇰🇷 vs 天安城 🇰🇷 | 18:30</div>
+        <div class="odds">
+            <div>主胜 2.38</div>
+            <div>平 3.21</div>
+            <div>客胜 3.72</div>
+            <div class="bar">
+                <div class="segment home" style="width: 39.49%;"></div>
+                <div class="segment draw" style="width: 31.15%;"></div>
+                <div class="segment away" style="width: 29.36%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(-1) 主队需赢2球以上才赢盘 | 水位信号弱</div>
+        <div class="total">大小球推荐方向: 大</div>
+        <div class="score">
+            <div class="option">2-1 <span class="probability">30%</span></div>
+            <div class="option">1-1 <span class="probability">25%</span></div>
+            <div class="option">2-2 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★★☆☆☆</div>
+        <div class="verdict">主队有望赢盘</div>
+    </div>
+    <div class="card">
+        <div class="title">全南天龙 🇰🇷 vs 釜山IPark 🇰🇷 | 18:30</div>
+        <div class="odds">
+            <div>主胜 2.21</div>
+            <div>平 3.60</div>
+            <div>客胜 3.68</div>
+            <div class="bar">
+                <div class="segment home" style="width: 42.99%;"></div>
+                <div class="segment draw" style="width: 27.78%;"></div>
+                <div class="segment away" style="width: 29.23%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(1) 客队需赢2球以上才赢盘 | 水位信号弱</div>
+        <div class="total">大小球推荐方向: 大</div>
+        <div class="score">
+            <div class="option">2-1 <span class="probability">30%</span></div>
+            <div class="option">1-1 <span class="probability">25%</span></div>
+            <div class="option">2-2 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★★☆☆☆</div>
+        <div class="verdict">主队有望赢盘</div>
+    </div>
+    <div class="league">瑞典超 第11轮</div>
+    <div class="card">
+        <div class="title">卡尔马 🇸🇪 vs 厄尔格里特 🇸🇪 | 20:00</div>
+        <div class="odds">
+            <div>主胜 2.39</div>
+            <div>平 4.42</div>
+            <div>客胜 2.80</div>
+            <div class="bar">
+                <div class="segment home" style="width: 39.33%;"></div>
+                <div class="segment draw" style="width: 22.62%;"></div>
+                <div class="segment away" style="width: 38.05%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(0) 无让球 | 水位信号弱</div>
+        <div class="total">大小球推荐方向: 小</div>
+        <div class="score">
+            <div class="option">1-1 <span class="probability">30%</span></div>
+            <div class="option">2-1 <span class="probability">25%</span></div>
+            <div class="option">1-2 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★★☆☆☆</div>
+        <div class="verdict">平局概率较高</div>
+    </div>
+    <div class="card">
+        <div class="title">哥德堡 🇸🇪 vs AIK索尔纳 🇸🇪 | 20:00</div>
+        <div class="odds">
+            <div>主胜 2.44</div>
+            <div>平 3.63</div>
+            <div>客胜 3.17</div>
+            <div class="bar">
+                <div class="segment home" style="width: 39.35%;"></div>
+                <div class="segment draw" style="width: 27.55%;"></div>
+                <div class="segment away" style="width: 33.10%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(0) 无让球 | 水位信号弱</div>
+        <div class="total">大小球推荐方向: 大</div>
+        <div class="score">
+            <div class="option">2-1 <span class="probability">30%</span></div>
+            <div class="option">1-1 <span class="probability">25%</span></div>
+            <div class="option">2-2 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★★☆☆☆</div>
+        <div class="verdict">主队有望赢盘</div>
+    </div>
+    <div class="card">
+        <div class="title">埃尔夫斯堡 🇸🇪 vs 哈马比 🇸🇪 | 22:30</div>
+        <div class="odds">
+            <div>主胜 1.84</div>
+            <div>平 5.85</div>
+            <div>客胜 3.47</div>
+            <div class="bar">
+                <div class="segment home" style="width: 52.72%;"></div>
+                <div class="segment draw" style="width: 17.11%;"></div>
+                <div class="segment away" style="width: 30.17%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(-1) 主队需赢2球以上才赢盘 | 水位信号强</div>
+        <div class="total">大小球推荐方向: 大</div>
+        <div class="score">
+            <div class="option">2-1 <span class="probability">30%</span></div>
+            <div class="option">3-1 <span class="probability">25%</span></div>
+            <div class="option">2-2 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★☆☆☆☆</div>
+        <div class="verdict">主队有望赢盘</div>
+    </div>
+    <div class="league">挪威甲 第14轮</div>
+    <div class="card">
+        <div class="title">奥德 🇳🇴 vs 海于格松 🇳🇴 | 22:00</div>
+        <div class="odds">
+            <div>主胜 4.13</div>
+            <div>平 4.54</div>
+            <div>客胜 1.85</div>
+            <div class="bar">
+                <div class="segment home" style="width: 23.68%;"></div>
+                <div class="segment draw" style="width: 21.80%;"></div>
+                <div class="segment away" style="width: 54.52%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(1) 客队需赢2球以上才赢盘 | 水位信号强</div>
+        <div class="total">大小球推荐方向: 小</div>
+        <div class="score">
+            <div class="option">0-1 <span class="probability">30%</span></div>
+            <div class="option">1-1 <span class="probability">25%</span></div>
+            <div class="option">0-2 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★★★☆☆</div>
+        <div class="verdict">客队有望赢盘</div>
+    </div>
+    <div class="league">瑞超 第13轮</div>
+    <div class="card">
+        <div class="title">MP米凯利 🇫🇮 vs 哈卡 🇫🇮 | 23:30</div>
+        <div class="odds">
+            <div>主胜 3.68</div>
+            <div>平 3.88</div>
+            <div>客胜 2.12</div>
+            <div class="bar">
+                <div class="segment home" style="width: 26.63%;"></div>
+                <div class="segment draw" style="width: 25.77%;"></div>
+                <div class="segment away" style="width: 47.60%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(1) 客队需赢2球以上才赢盘 | 水位信号弱</div>
+        <div class="total">大小球推荐方向: 小</div>
+        <div class="score">
+            <div class="option">0-1 <span class="probability">30%</span></div>
+            <div class="option">1-1 <span class="probability">25%</span></div>
+            <div class="option">0-2 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★★☆☆☆</div>
+        <div class="verdict">客队有望赢盘</div>
+    </div>
+    <div class="league">2026世界杯</div>
+    <div class="card gold">
+        <div class="title">巴西 🇧🇷 vs 挪威 🇳🇴 | 04:00</div>
+        <div class="odds">
+            <div>主胜 1.88</div>
+            <div>平 3.46</div>
+            <div>客胜 4.28</div>
+            <div class="bar">
+                <div class="segment home" style="width: 51.06%;"></div>
+                <div class="segment draw" style="width: 28.89%;"></div>
+                <div class="segment away" style="width: 20.05%;"></div>
+            </div>
+        </div>
+        <div class="handicap">让球(-1) 主队需赢2球以上才赢盘 | 水位信号强</div>
+        <div class="total">大小球推荐方向: 大</div>
+        <div class="score">
+            <div class="option">2-0 <span class="probability">30%</span></div>
+            <div class="option">3-1 <span class="probability">25%</span></div>
+            <div class="option">2-1 <span class="probability">20%</span></div>
+        </div>
+        <div class="cold">冷门指数: ★☆☆☆☆</div>
+        <div class="verdict">巴西有望赢盘</div>
+    </div>
+</div>
+<script>
+function updateTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('zh-CN', { hour12: false });
+    document.getElementById('current-time').textContent = `北京时间: ${timeString}`;
+}
+
+function updateColdWarning() {
+    const cards = document.querySelectorAll('.card');
+    let coldCount = 0;
+    cards.forEach(card => {
+        const coldIndex = card.querySelector('.cold').textContent.split(' ')[1].length;
+        if (coldIndex >= 3) {
+            card.classList.add('cold');
+            coldCount++;
+        } else {
+            card.classList.remove('cold');
+        }
+    });
+    document.getElementById('cold-warning').textContent = `冷门预警数: ${coldCount}`;
+}
+
+updateTime();
+updateColdWarning();
+setInterval(updateTime, 1000);
+</script>
+</body>
+</html>
+```
